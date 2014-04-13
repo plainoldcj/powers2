@@ -59,9 +59,7 @@ public class GameActivity extends Activity {
         Typeface tf = Typeface.createFromAsset(getAssets(), "tf2build.ttf");
         
         GameView gameView = (GameView)contentView;
-        gameView.board = new GameBoard();
-        gameView.renderer = new GameRenderer();
-        gameView.renderer.SetTypeface(tf);
+        gameView.theGame.renderer.SetTypeface(tf);
         
         /*
         // Set up an instance of SystemUiHider to control the system UI for

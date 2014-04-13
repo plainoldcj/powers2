@@ -19,10 +19,6 @@ public class GameRenderer {
 	private Paint tilePaint 	= new Paint();
 	private Paint textPaint 	= new Paint();
 	
-	public class Tile {
-		Vector2 pos;
-	}
-	
 	public Vector2 ToWorldSpace(int row, int col) {
 		final float f = 1.0f / FIELD_SZ;
 		return new Vector2(f * row, f * col);
@@ -64,7 +60,7 @@ public class GameRenderer {
 		else return InterpolateSolidColors(Color.RED, Color.YELLOW, 0.5f * l);
 	}
 	
-	public void DrawTile(Canvas canvas, Vector2 fieldOff, float fieldSz, Tile tile, int pow) {
+	public void DrawTile(Canvas canvas, Vector2 fieldOff, float fieldSz, Game.Tile tile, int pow) {
 		int value = 1 << pow;
 		String text = "" + value;
 		
@@ -105,7 +101,7 @@ public class GameRenderer {
 		float 	fieldSz = scrSz * 0.8f;
 		Vector2 fieldOff = Vector2.mul(0.5f, new Vector2(canvas.getWidth() - fieldSz, canvas.getHeight() - fieldSz));
 		
-		Tile tile = new Tile();
+		Game.Tile tile = new Game.Tile();
 		for(int row = 0; row < FIELD_SZ; ++row) {
 			for(int col = 0; col < FIELD_SZ; ++col) {
 				int sq = squares[col * FIELD_SZ + row]; // access row major to flip board. why is this necessary?

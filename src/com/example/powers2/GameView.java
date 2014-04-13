@@ -7,30 +7,29 @@ import android.view.View;
 
 public class GameView extends View {
 	
-	public GameBoard	board = null;
-	public GameRenderer renderer = null;
+	public Game theGame = new Game();
 
 	public GameView(Context context, AttributeSet attribs) {
 		super(context, attribs);
 		
 		OnSwipeTouchListener listener = new OnSwipeTouchListener(context) {
 			public void onSwipeTop() {
-				if(null != board) board.up();
+				theGame.board.up();
 				invalidate();
 			}
 			
 			public void onSwipeBottom() {
-				if(null != board) board.down();
+				theGame.board.down();
 				invalidate();
 			}
 			
 			public void onSwipeLeft() {
-				if(null != board) board.left();
+				theGame.board.left();
 				invalidate();
 			}
 			
 			public void onSwipeRight() {
-				if(null != board) board.right();
+				theGame.board.right();
 				invalidate();
 			}
 		};
@@ -39,7 +38,7 @@ public class GameView extends View {
 	}
 	
 	protected void onDraw(Canvas canvas) {
-		if(null != board && null != renderer) renderer.Draw(canvas, board.getSquares());
+		theGame.Draw(canvas);
 	}
 
 }
