@@ -1,7 +1,5 @@
 package com.example.powers2;
 
-import java.util.ArrayList;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,9 +22,6 @@ public class GameRenderer {
 	public class Tile {
 		Vector2 pos;
 	}
-	public ArrayList<Tile> tiles = new ArrayList<Tile>();
-	
-	public int[] field = new int[NUM_TILES];
 	
 	public Vector2 ToWorldSpace(int row, int col) {
 		final float f = 1.0f / FIELD_SZ;
@@ -36,25 +31,10 @@ public class GameRenderer {
 	public GameRenderer() {
 		borderPaint.setColor(Color.BLACK);
 		textPaint.setColor(Color.WHITE);
-		
-		for(int i = 0; i < NUM_TILES; ++i) {
-			field[i] = 1;
-		}
-		
-		for(int row = 0; row < FIELD_SZ; ++row) {
-			for(int col = 0; col < FIELD_SZ; ++col) {
-				Tile tile = new Tile();
-				tile.pos = ToWorldSpace(row, col);
-				tiles.add(tile);
-			}
-		}
 	}
 	
 	public void SetTypeface(Typeface typeface) {
 		textPaint.setTypeface(typeface);
-	}
-	
-	public void SpawnTile() {
 	}
 	
 	public Vector2 ToScreenSpace(Vector2 off, float scrSz, Vector2 v) {
