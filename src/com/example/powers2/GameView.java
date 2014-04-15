@@ -7,7 +7,7 @@ import android.view.View;
 
 public class GameView extends View {
 	
-	public GameBoard	board = null;
+	private GameBoard	board = null;
 	public GameRenderer renderer = null;
 
 	public GameView(Context context, AttributeSet attribs) {
@@ -40,6 +40,11 @@ public class GameView extends View {
 	
 	protected void onDraw(Canvas canvas) {
 		if(null != board && null != renderer) renderer.Draw(canvas, board.getSquares());
+	}
+
+	public void setBoard(GameBoard board) {
+		this.board = board;
+		invalidate();
 	}
 
 }

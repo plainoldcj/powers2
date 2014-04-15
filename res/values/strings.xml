@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">powers2</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="new_game_button">New Game</string>
+    <string name="new_game_dialog_title">Start new game?</string>
+    <string name="new_game_dialog_message">You will lose your progress!</string>
+    <string name="new_game_dialog_positive">New Game</string>
+    <string name="new_game_dialog_negative">Cancel</string>
 
 </resources>

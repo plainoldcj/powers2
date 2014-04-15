@@ -1,16 +1,14 @@
 package com.example.powers2;
 
-import com.example.powers2.util.SystemUiHider;
-
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.view.MotionEvent;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.Button;
+
+import com.example.powers2.NewGameDialogFragment.NewGameDialogListener;
+import com.example.powers2.util.SystemUiHider;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -18,7 +16,7 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class GameActivity extends Activity {
+public class GameActivity extends FragmentActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -54,15 +52,36 @@ public class GameActivity extends Activity {
         setContentView(R.layout.activity_game);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.game_view);
         
         Typeface tf = Typeface.createFromAsset(getAssets(), "tf2build.ttf");
         
-        GameView gameView = (GameView)contentView;
-        gameView.board = new GameBoard();
+        final GameView gameView = (GameView) findViewById(R.id.game_view);
+        gameView.setBoard(new GameBoard());
         gameView.renderer = new GameRenderer();
         gameView.renderer.SetTypeface(tf);
         
+		final Button newGameButton = (Button) findViewById(R.id.new_game_button);
+
+		newGameButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				NewGameDialogFragment dialog = new NewGameDialogFragment();
+				dialog.setNewGameDialogListener(new NewGameDialogListener() {
+
+					@Override
+					public void onDialogPositiveClick(DialogFragment dialog) {
+						gameView.setBoard(new GameBoard());
+					}
+
+					@Override
+					public void onDialogNegativeClick(DialogFragment dialog) {
+					}
+				});
+				dialog.show(getSupportFragmentManager(), "newGameDialog");
+			}
+		});
+
         /*
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
