@@ -59,15 +59,21 @@ public class GameRenderer {
 		int value = 1 << tile.pow;
 		String text = "" + value;
 		
-		Vector2 upperLeft = ToScreenSpace(fieldOff, fieldSz, tile.pos);
-		Vector2 lowerRight = ToScreenSpace(fieldOff, fieldSz, Vector2.add(tile.pos, tileSzW));
+		Vector2 upperLeft 	= ToScreenSpace(fieldOff, fieldSz, tile.pos);
+		Vector2 lowerRight 	= ToScreenSpace(fieldOff, fieldSz, Vector2.add(tile.pos, tileSzW));
+		Vector2 tileSzS 	= Vector2.sub(lowerRight, upperLeft);
+		Vector2 center 		= Vector2.add(upperLeft, Vector2.mul(0.5f, tileSzS));
+		
+		canvas.save();
+		canvas.scale(tile.scale, tile.scale, center.x, center.y);
+		
 		RectF rect = new RectF(upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 		
 		tilePaint.setColor(ColorFromPower(tile.pow));
 		
 		canvas.drawRoundRect(rect, 10, 10, tilePaint);
 		
-		Vector2 tileSzS = Vector2.sub(lowerRight, upperLeft);
+		
 		tileSzS = Vector2.mul(0.8f, tileSzS);
 		
 		textPaint.setTextSize(128.0f);
@@ -80,12 +86,12 @@ public class GameRenderer {
 		
 		textPaint.getTextBounds(text, 0, text.length(), bounds);
 		
-		Vector2 center = ToScreenSpace(fieldOff, fieldSz, Vector2.add(tile.pos, Vector2.mul(0.5f, tileSzW)));
 		Vector2 textCenter = Vector2.copy(center);
-		
 		textCenter.x -= 0.5f * bounds.width();
 		textCenter.y += 0.5f * bounds.height();
 		canvas.drawText(text, textCenter.x, textCenter.y, textPaint);
+		
+		canvas.restore();
 	}
 	
 	public void Draw(Canvas canvas, ArrayList<Game.Tile> tiles) {

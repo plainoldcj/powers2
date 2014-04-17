@@ -9,20 +9,27 @@ public class Game {
 	public static final int 	FIELD_SZ	= 4;
 	public static final int 	NUM_TILES 	= FIELD_SZ * FIELD_SZ;
 	public static final float	VELOCITY	= 4.0f;
+	public static final float	POP_DUR		= 0.25f;
+	public static final float	POP_SCALE	= 1.25f;
 	
 	long start = 0;
 	
 	public static class Tile {
 		Vector2 pos;
+		float	scale = 1.0f;
+		
 		int		pow = 1;
 		
 		Tile	master = null;
 		
-		private Vector2 p0, p1;
-		private float	t;
-		private float	dur;
+		private Vector2 pos_v0, pos_v1;
+		private float	pos_t, pos_dur;
+		
+		private float	scl_v0, scl_v1;
+		private float	scl_t, scl_dur;
 		
 		private boolean	isMoving 	= false;
+		private boolean isPopping	= false;
 		private boolean isDead		= false;
 		
 		public boolean IsMaster() { return null == master; }
@@ -32,11 +39,19 @@ public class Game {
 		public void SetMaster(Tile master) { this.master = master; }
 		
 		public void MoveTo(Vector2 dst, float dur) {
-			p0 = Vector2.copy(pos);
-			p1 = Vector2.copy(dst);
-			t = 0.0f;
-			this.dur = Vector2.Length(Vector2.sub(p1, p0)) / VELOCITY;
+			pos_v0 = Vector2.copy(pos);
+			pos_v1 = Vector2.copy(dst);
+			pos_t = 0.0f;
+			pos_dur = Vector2.Length(Vector2.sub(pos_v1, pos_v0)) / VELOCITY;
 			isMoving = true;
+		}
+		
+		public void Pop() {
+			scl_v0 = 1.0f;
+			scl_v1 = POP_SCALE;
+			scl_t = 0.0f;
+			scl_dur = POP_DUR;
+			isPopping = true;
 		}
 		
 		public void MoveTo(int row, int col) {
@@ -54,19 +69,30 @@ public class Game {
 		
 		public void Update(float secsPassed) {
 			if(isMoving) {
-				Vector2 dir = Vector2.Normalize(Vector2.sub(p1, p0));
+				Vector2 dir = Vector2.Normalize(Vector2.sub(pos_v1, pos_v0));
 				pos = Vector2.add(pos, Vector2.mul(VELOCITY * secsPassed, dir));
-				t += secsPassed;
-				if(dur < t) {
-					pos = p1;
+				pos_t += secsPassed;
+				if(pos_dur < pos_t) {
+					pos = pos_v1;
 					isMoving = false;
 					
 					if(null != master) {
 						master.pow += 1;
+						master.Pop();
 						isDead = true;
 					}
 				}
-			}	
+			}
+			
+			if(isPopping) {
+				scl_t += secsPassed;
+				float l = (float)Math.PI * scl_t / scl_dur;
+				scale = scl_v0 + (scl_v1 - scl_v0) * (float)Math.sin(l);
+				if(scl_dur < scl_t) {
+					scale = scl_v0;
+					isPopping = false;
+				}
+			}
 		}
 	}
 	
