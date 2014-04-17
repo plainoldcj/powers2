@@ -9,16 +9,19 @@ import android.util.Log;
 
 public class GameBoard {
 
+	public Game theGame = null;
+	
 	// NOTE:
 	// tile (row, col) is occupied iff 0 < squares(row, col)
 	
 	// private static final String TAG = GameBoard.class.getName();
 
 	private int[] squares = new int[ROWS * COLS];
+	private Game.Tile[] tiles = new Game.Tile[ROWS * COLS];
 	public static final int ROWS = 4;
 	public static final int COLS = ROWS;
 
-	public GameBoard() {
+	public void Init() {
 		int occupied = 0;
 		while (occupied < 2) {
 			int r = (int) Math.floor(Math.random() * squares.length);
@@ -26,6 +29,10 @@ public class GameBoard {
 			if (squares[r] == 0) {
 				squares[r] = 1;
 				occupied++;
+				
+				int row = r / COLS;
+				int col = r % COLS;
+				tiles[r] = theGame.SpawnTile(row, col);
 			}
 		}
 	}
@@ -35,6 +42,15 @@ public class GameBoard {
 	
 	public int get(int row, int col) {
 		return squares[row * COLS + col];
+	}
+	
+	private int flatten(int row, int col, boolean transpose) {
+		if(transpose) {
+			int tmp = row;
+			row = col;
+			col = tmp;
+		}
+		return row * COLS + col;
 	}
 
 	private int get(int row, int col, boolean transpose) {
@@ -76,11 +92,14 @@ public class GameBoard {
 		int cols = horizontal ? COLS : ROWS;
 		for (int row = 0; row < rows; row++) {
 			Deque<Integer> deque = new LinkedList<Integer>();
+			Deque<Game.Tile> tdeq = new LinkedList<Game.Tile>();
 			int col = inc ? 0 : cols - 1;
 			while (inc ? col < cols : col > -1) {
 				int n = get(row, col, transpose);
 				if (n > 0) {
 					deque.add(get(row, col, transpose));
+					tdeq.add(tiles[flatten(row, col, transpose)]);
+					tiles[flatten(row, col, transpose)] = null;
 				}
 				col = next(col, inc);
 			}
@@ -89,11 +108,18 @@ public class GameBoard {
 				if (deque.size() > 0) {
 					int x = deque.pop();
 					set(row, col, transpose, x);
+					Game.Tile tile = tdeq.pop();
+					tile.MoveTo(row, col, transpose);
+					tiles[flatten(row, col, transpose)] = tile;
 					if (deque.size() > 0 && deque.peek() == x) {
 						set(row, col, transpose, deque.pop() + 1);
+						Game.Tile slave = tdeq.pop();
+						slave.MoveTo(row, col, transpose);
+						slave.SetMaster(tile);
 					}
 				} else {
 					set(row, col, transpose, 0);
+					tiles[flatten(row, col, transpose)] = null;
 					positions.add(new Position(row, col, transpose));
 				}
 				col = next(col, inc);
@@ -101,8 +127,9 @@ public class GameBoard {
 		}
 		if (positions.size() > 0) {
 			int i = (int) Math.floor(Math.random() * positions.size());
-			Position position = positions.get(i);
-			set(position.row, position.col, position.transpose, 1);
+			Position p = positions.get(i);
+			set(p.row, p.col, p.transpose, 1);
+			tiles[flatten(p.row, p.col, p.transpose)] = theGame.SpawnTile(p.row, p.col, p.transpose);
 		}
 	}
 

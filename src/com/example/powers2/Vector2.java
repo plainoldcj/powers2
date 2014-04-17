@@ -25,4 +25,13 @@ public class Vector2 {
 	public static Vector2 mul(float s, Vector2 v) {
 		return new Vector2(s * v.x, s * v.y);
 	}
+	
+	public static float Length(Vector2 v) {
+		return (float)Math.sqrt(v.x * v.x + v.y * v.y);
+	}
+	
+	public static Vector2 Normalize(Vector2 v) {
+		float d = 1.0f / Length(v);
+		return new Vector2(d * v.x, d * v.y);
+	}
 }

@@ -1,5 +1,7 @@
 package com.example.powers2;
 
+import java.util.ArrayList;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,21 +10,14 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class GameRenderer {
-	public static final int 	FIELD_SZ	= 4;
-	public static final int 	NUM_TILES 	= FIELD_SZ * FIELD_SZ;
-	public static final float 	TILE_SZ		= 1.0f / FIELD_SZ * 0.9f;
-	public static final float	PAD_SZ		= 1.0f / FIELD_SZ - TILE_SZ;
+	public static final float 	TILE_SZ		= 1.0f / Game.FIELD_SZ * 0.9f;
+	public static final float	PAD_SZ		= 1.0f / Game.FIELD_SZ - TILE_SZ;
 	
 	public static final Vector2 tileSzW = new Vector2(TILE_SZ, TILE_SZ);
 	
 	private Paint borderPaint	= new Paint();
 	private Paint tilePaint 	= new Paint();
 	private Paint textPaint 	= new Paint();
-	
-	public Vector2 ToWorldSpace(int row, int col) {
-		final float f = 1.0f / FIELD_SZ;
-		return new Vector2(f * row, f * col);
-	}
 	
 	public GameRenderer() {
 		borderPaint.setColor(Color.BLACK);
@@ -60,15 +55,15 @@ public class GameRenderer {
 		else return InterpolateSolidColors(Color.RED, Color.YELLOW, 0.5f * l);
 	}
 	
-	public void DrawTile(Canvas canvas, Vector2 fieldOff, float fieldSz, Game.Tile tile, int pow) {
-		int value = 1 << pow;
+	public void DrawTile(Canvas canvas, Vector2 fieldOff, float fieldSz, Game.Tile tile) {
+		int value = 1 << tile.pow;
 		String text = "" + value;
 		
 		Vector2 upperLeft = ToScreenSpace(fieldOff, fieldSz, tile.pos);
 		Vector2 lowerRight = ToScreenSpace(fieldOff, fieldSz, Vector2.add(tile.pos, tileSzW));
 		RectF rect = new RectF(upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 		
-		tilePaint.setColor(ColorFromPower(pow));
+		tilePaint.setColor(ColorFromPower(tile.pow));
 		
 		canvas.drawRoundRect(rect, 10, 10, tilePaint);
 		
@@ -93,7 +88,7 @@ public class GameRenderer {
 		canvas.drawText(text, textCenter.x, textCenter.y, textPaint);
 	}
 	
-	public void Draw(Canvas canvas, int[] squares) {
+	public void Draw(Canvas canvas, ArrayList<Game.Tile> tiles) {
 		float scrSz = Math.min(canvas.getWidth(), canvas.getHeight());
 		
 		DrawBorder(canvas, scrSz);
@@ -101,15 +96,12 @@ public class GameRenderer {
 		float 	fieldSz = scrSz * 0.8f;
 		Vector2 fieldOff = Vector2.mul(0.5f, new Vector2(canvas.getWidth() - fieldSz, canvas.getHeight() - fieldSz));
 		
-		Game.Tile tile = new Game.Tile();
-		for(int row = 0; row < FIELD_SZ; ++row) {
-			for(int col = 0; col < FIELD_SZ; ++col) {
-				int sq = squares[col * FIELD_SZ + row]; // access row major to flip board. why is this necessary?
-				if(0 < sq) {
-					tile.pos = ToWorldSpace(row, col);
-					DrawTile(canvas, fieldOff, fieldSz, tile, sq);
-				}
-			}
+		for(Game.Tile tile : tiles) {
+			if(!tile.IsMaster()) DrawTile(canvas, fieldOff, fieldSz, tile);
+		}
+		
+		for(Game.Tile tile : tiles) {
+			if(tile.IsMaster()) DrawTile(canvas, fieldOff, fieldSz, tile);
 		}
 	}
 }

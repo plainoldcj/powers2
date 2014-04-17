@@ -39,6 +39,8 @@ public class GameView extends View {
 	
 	protected void onDraw(Canvas canvas) {
 		theGame.Draw(canvas);
+		
+		this.postInvalidateDelayed(16);
 	}
 
 }
