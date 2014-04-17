@@ -72,7 +72,7 @@ public class Game {
 	
 	private ArrayList<Tile> tiles = new ArrayList<Tile>();
 	
-	public GameBoard	board = new GameBoard();
+	public GameBoard	board = null;
 	public GameRenderer	renderer = new GameRenderer();
 	
 	public static Vector2 ToWorldSpace(int row, int col) {
@@ -80,7 +80,12 @@ public class Game {
 		return new Vector2(f * row, f * col);
 	}
 	
-	public Game() {
+	public Game() { NewGame(); }
+	
+	public void NewGame() {
+		tiles.clear();
+		
+		board = new GameBoard();
 		board.theGame = this;
 		board.Init();
 	}
