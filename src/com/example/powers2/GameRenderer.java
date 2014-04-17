@@ -113,6 +113,8 @@ public class GameRenderer {
 	public void Draw(Canvas canvas, ArrayList<Game.Tile> tiles) {
 		float scrSz = Math.min(canvas.getWidth(), canvas.getHeight());
 		
+		canvas.drawColor(InterpolateSolidColors(Color.RED, Color.WHITE, 0.8f));
+		
 		DrawBorder(canvas, scrSz);
 		
 		float 	fieldSz = scrSz * 0.8f;
