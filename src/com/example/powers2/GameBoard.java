@@ -129,7 +129,9 @@ public class GameBoard {
 			int i = (int) Math.floor(Math.random() * positions.size());
 			Position p = positions.get(i);
 			set(p.row, p.col, p.transpose, 1);
-			tiles[flatten(p.row, p.col, p.transpose)] = theGame.SpawnTile(p.row, p.col, p.transpose);
+			Game.Tile tile = theGame.SpawnTile(p.row, p.col, p.transpose);
+			tiles[flatten(p.row, p.col, p.transpose)] = tile;
+			tile.FadeIn();
 		}
 	}
 

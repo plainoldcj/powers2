@@ -11,12 +11,18 @@ public class Game {
 	public static final float	VELOCITY	= 4.0f;
 	public static final float	POP_DUR		= 0.25f;
 	public static final float	POP_SCALE	= 1.25f;
+	public static final float	FADE_IN_DUR		= 0.25f;
+	public static final float	FADE_IN_ROT0	= -90.0f;
+	public static final float	FADE_IN_ROT1	= 0.0f;
+	public static final float	FADE_IN_ANG_VEL	= (FADE_IN_ROT1 - FADE_IN_ROT0) / FADE_IN_DUR;
 	
 	long start = 0;
 	
 	public static class Tile {
 		Vector2 pos;
-		float	scale = 1.0f;
+		float	scale 	= 1.0f;
+		float	rot 	= 0.0f;
+		float	alpha	= 1.0f;
 		
 		int		pow = 1;
 		
@@ -28,8 +34,12 @@ public class Game {
 		private float	scl_v0, scl_v1;
 		private float	scl_t, scl_dur;
 		
+		private float	rot_v1;
+		private float	rot_t, rot_dur;
+		
 		private boolean	isMoving 	= false;
 		private boolean isPopping	= false;
+		private boolean isFadingIn	= false;
 		private boolean isDead		= false;
 		
 		public boolean IsMaster() { return null == master; }
@@ -52,6 +62,14 @@ public class Game {
 			scl_t = 0.0f;
 			scl_dur = POP_DUR;
 			isPopping = true;
+		}
+		
+		public void FadeIn() {
+			rot = FADE_IN_ROT0;
+			rot_v1 = FADE_IN_ROT1;
+			rot_t = 0.0f;
+			rot_dur = FADE_IN_DUR;
+			isFadingIn = true;
 		}
 		
 		public void MoveTo(int row, int col) {
@@ -91,6 +109,20 @@ public class Game {
 				if(scl_dur < scl_t) {
 					scale = scl_v0;
 					isPopping = false;
+				}
+			}
+			
+			if(isFadingIn) {
+				rot_t += secsPassed;
+				rot += secsPassed * FADE_IN_ANG_VEL;
+				scale = rot_t / rot_dur;
+				alpha = rot_t / rot_dur;
+				
+				if(rot_dur < rot_t) {
+					rot = rot_v1;
+					scale = 1.0f;
+					alpha = 1.0f;
+					isFadingIn = false;
 				}
 			}
 		}

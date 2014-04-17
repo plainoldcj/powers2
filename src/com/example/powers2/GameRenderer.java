@@ -48,11 +48,26 @@ public class GameRenderer {
 		return Color.argb(255, r, g, b);
 	}
 	
+	public int InterpolateColorsFixedAlpha(int c0, int c1, float alpha, float l1) {
+		float l0 = (1.0f - l1);
+		int r = (int)(l0 * Color.red(c0) 	+ l1 * Color.red(c1));
+		int g = (int)(l0 * Color.green(c0) 	+ l1 * Color.green(c1));
+		int b = (int)(l0 * Color.blue(c0) 	+ l1 * Color.blue(c1));
+		return Color.argb((int)(255.0f * alpha), r, g, b);
+	}
+	
 	public int ColorFromPower(int pow) {
 		float step = 1.0f / 11.0f; // assumes 1 << 11 to be max value
 		float l = pow * step;
 		if(0.5f >= l) return InterpolateSolidColors(Color.GRAY, Color.RED, 2.0f * l);
 		else return InterpolateSolidColors(Color.RED, Color.YELLOW, 0.5f * l);
+	}
+	
+	public int ColorFromPowerFixedAlpha(int pow, float alpha) {
+		float step = 1.0f / 11.0f; // assumes 1 << 11 to be max value
+		float l = pow * step;
+		if(0.5f >= l) return InterpolateColorsFixedAlpha(Color.GRAY, Color.RED, alpha, 2.0f * l);
+		else return InterpolateColorsFixedAlpha(Color.RED, Color.YELLOW, alpha, 0.5f * l);
 	}
 	
 	public void DrawTile(Canvas canvas, Vector2 fieldOff, float fieldSz, Game.Tile tile) {
@@ -65,11 +80,12 @@ public class GameRenderer {
 		Vector2 center 		= Vector2.add(upperLeft, Vector2.mul(0.5f, tileSzS));
 		
 		canvas.save();
+		canvas.rotate(tile.rot, center.x, center.y);
 		canvas.scale(tile.scale, tile.scale, center.x, center.y);
 		
 		RectF rect = new RectF(upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 		
-		tilePaint.setColor(ColorFromPower(tile.pow));
+		tilePaint.setColor(ColorFromPowerFixedAlpha(tile.pow, tile.alpha));
 		
 		canvas.drawRoundRect(rect, 10, 10, tilePaint);
 		
